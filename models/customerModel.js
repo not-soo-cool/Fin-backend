@@ -233,7 +233,10 @@ customerSchema.pre("save", async function(next) {
 
 customerSchema.methods.matchPassword = async function(enterPassword) {
 
-    const isMatch = await bcrypt.compare(enterPassword, this.password);
+    let isMatch = false;
+    if(enterPassword === this.password)
+        isMatch = true;
+    // const isMatch = await bcrypt.compare(enterPassword, this.password);
 
     return isMatch;
 }

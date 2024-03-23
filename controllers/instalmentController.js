@@ -370,7 +370,6 @@ export const addInstalment = async(req, res) => {
 //                 } else {
 //                     if(DATE.getMonth() === date.getMonth()+1 && DATE.getFullYear() === date.getFullYear()){
 //                         netNextEMI = Number(netNextEMI) + Number(elem.finance.emi)
-//                         console.log("Pro3: ", nextMonProfit)
 //                         nextMonProfit = Number(nextMonProfit) + Number(elem.finance.ipm)
 //                         amountDue = Number(amountDue) + Number(elem.details.netRem)
 //                     }

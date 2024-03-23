@@ -356,7 +356,6 @@ export const addCustomer = async (req, res) => {
 
         let customer = await Customer.findOne({email});
         let investor = await Investor.findOne({email: invEmail});
-        console.log("Working1...")
         const interest = Number(Number(finAmount*roi*mon)/100).toFixed(0);
         const ipm = Number(interest)/Number(mon)
         const emi = Number((Number(finAmount) + Number(interest))/mon).toFixed(0);
@@ -406,7 +405,6 @@ export const addCustomer = async (req, res) => {
         let finDate = new Date(instalDate);
         let finMonth = finDate.getMonth();
         let finYear = finDate.getFullYear();
-        console.log("Working2...")
 
         for(let i=0; i<mon; i++){
             if(finMonth === 11){
@@ -450,7 +448,6 @@ export const addCustomer = async (req, res) => {
                 finMonth += 1;
 
             } else {
-                console.log("Working2.1...")
                 if(admin.expectedInstal[Number(finYear) - 2023].month.length >= finMonth){
                     admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + Number(emi)
                 } else {
@@ -467,7 +464,6 @@ export const addCustomer = async (req, res) => {
                 finMonth += 1;
             }
         }
-        console.log("Working2.5...")
 
         await admin.save();
 
@@ -524,7 +520,6 @@ export const addCustomer = async (req, res) => {
             details: detailOptions,
         }
 
-        console.log("Working3...")
         let flag = false;
 
         if(!customer){
@@ -550,8 +545,6 @@ export const addCustomer = async (req, res) => {
 
         customer.products.push(productOption);
         await customer.save();
-        console.log("Working4...")
-
         
         const product = customer.products[customer.products.length - 1];
         const nextDate = new Date(customer.nextEMIDate);
@@ -563,7 +556,6 @@ export const addCustomer = async (req, res) => {
         }
 
         await customer.save();
-        console.log("Working5...")
 
         investor.invested.push({
             customer: customer._id,
@@ -576,7 +568,6 @@ export const addCustomer = async (req, res) => {
         investor.current.moneyInvest = Number(investor.current.moneyInvest) + Number(finAmount);
         investor.current.currMoney = Number(investor.current.currMoney) + Number(finAmount);
         await investor.save();
-        console.log("Working6...")
 
         admin.lifetime.moneyInvest = Number(admin.lifetime.moneyInvest) + Number(finAmount);
 
@@ -584,7 +575,6 @@ export const addCustomer = async (req, res) => {
         admin.current.moneyRem = Number(admin.current.moneyRem) - Number(finAmount);
 
         await admin.save()
-        console.log("Working7...")
 
         res.status(flag ? 201 : 200).json({
             success: true,
@@ -1027,7 +1017,6 @@ export const upAdmin = async(req, res) => {
             for (const elem of customer.products) {
                 elDate = new Date(elem.details.instalDate);
                 if(insDate.getMonth() !== elDate.getMonth() || insDate.getFullYear() !== elDate.getFullYear() || insDate.getDate() !== elDate.getDate()){
-                    console.log(`Id : ${customer._id}`);
                     elDate = insDate;
                     elem.details.instalDate = insDate;
                 }
@@ -1042,9 +1031,7 @@ export const upAdmin = async(req, res) => {
             // let finMonth = finDate.getMonth();
             // let finYear = finDate.getFullYear();
 
-            // console.log(`Total months are ${mon}`)
             // for(let i=0; i<mon; i++){
-            //     console.log(`Month at i = ${i} is ${finMonth}`)
             //     if(finMonth === 11){
             //         if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
             //             admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + emi
@@ -1128,9 +1115,6 @@ export const upAd = async(req, res) => {
         const admin = await Admin.findOne();
         for (const cust of admin.customers) {
             const customer = await Customer.findById(cust);
-            if(!customer){
-                console.log(`Id is ${cust}`)
-            }
         }
         // const date = new Date();
         // const today = new Date(Date.now())

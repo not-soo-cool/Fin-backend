@@ -18,6 +18,7 @@ export const addInstalment = async(req, res) => {
             })
         }
 
+        const today = new Date(Date.now());
         const date = new Date(customer.nextEMIDate);
         const createdAt = new Date(customer.nextEMIDate);
         const adMon = date.getMonth();
@@ -188,7 +189,7 @@ export const addInstalment = async(req, res) => {
                     }
                     await investor.save();
 
-                    investor.current.currMonProfit = investor.profits[Number(adYear) - 2023].month[adMon];
+                    investor.current.currMonProfit = investor.profits[Number(date.getFullYear()) - 2023].month[date.getMonth()];
 
                     if(adMon === 11){
                         DATE.setMonth(0);

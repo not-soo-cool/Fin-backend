@@ -25,8 +25,6 @@ app.use(
     })
 );
 
-console.log(`WEB URL: ${process.env.WEB_URL}`);
-
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/investor", investorRouter);
 app.use("/api/v1/customer", customerRouter);

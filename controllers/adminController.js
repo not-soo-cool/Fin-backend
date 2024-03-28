@@ -408,13 +408,13 @@ export const addCustomer = async (req, res) => {
 
         for(let i=0; i<mon; i++){
             if(finMonth === 11){
-                if(admin.expectedInstal[Number(finYear) - 2023].month.length >= finMonth){
+                if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
                     admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + Number(emi)
                 } else {
                     admin.expectedInstal[Number(finYear) - 2023].month.push(emi);
                 }
 
-                if(admin.expectedProfits[Number(finYear) - 2023].month.length >= finMonth){
+                if(admin.expectedProfits[Number(finYear) - 2023].month.length > finMonth){
                     admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + Number(ipm)
                 } else {
                     admin.expectedProfits[Number(finYear) - 2023].month.push(ipm);
@@ -426,7 +426,7 @@ export const addCustomer = async (req, res) => {
                 finYear += 1;
 
             } else if(finMonth === 0) {
-                if(admin.expectedInstal.length >= Number(finYear) - 2023){
+                if(admin.expectedInstal.length > Number(finYear) - 2023){
                     admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + Number(emi)
                 } else {
                     admin.expectedInstal.push({
@@ -435,7 +435,7 @@ export const addCustomer = async (req, res) => {
                     })
                 }
 
-                if(admin.expectedProfits.length >= Number(finYear) - 2023){
+                if(admin.expectedProfits.length > Number(finYear) - 2023){
                     admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + Number(ipm)
                 } else {
                     admin.expectedProfits.push({
@@ -448,13 +448,13 @@ export const addCustomer = async (req, res) => {
                 finMonth += 1;
 
             } else {
-                if(admin.expectedInstal[Number(finYear) - 2023].month.length >= finMonth){
+                if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
                     admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + Number(emi)
                 } else {
                     admin.expectedInstal[Number(finYear) - 2023].month.push(emi);
                 }
 
-                if(admin.expectedProfits[Number(finYear) - 2023].month.length >= finMonth){
+                if(admin.expectedProfits[Number(finYear) - 2023].month.length > finMonth){
                     admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + Number(ipm)
                 } else {
                     admin.expectedProfits[Number(finYear) - 2023].month.push(ipm);

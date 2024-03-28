@@ -981,7 +981,7 @@ export const updatePrevAdmin = async (req, res) => {
 
         admin.lifetime.prevMoneyInvest = admin.lifetime.moneyInvest
         admin.lifetime.prevMoneyTotal = admin.lifetime.moneyTotal
-        admin.lifetime.prevProfit = admin.profits[prevYear - 2023].month[prevMon]
+        admin.lifetime.prevProfit = admin.profits[Number(prevYear) - 2023].month[prevMon]
 
         admin.current.prevActiveInvest = admin.current.activeInvest
         admin.current.prevMoneyRem = admin.current.moneyRem

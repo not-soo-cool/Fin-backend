@@ -589,6 +589,102 @@ export const addCustomer = async (req, res) => {
     }
 }
 
+export const deleteCustomer = async (req, res) => {
+    try {
+
+        let admin = await Admin.findOne();
+
+        // const {email} = req.body;
+
+        let customer = await Customer.findById(req.params.id);
+        let investor = await Investor.findById(customer.products[0].investor);
+
+        const instalDate = new Date(customer.nextEMIDate);
+        let finDate = new Date(customer.nextEMIDate)
+        let finMonth = finDate.getMonth();
+        let finYear = finDate.getFullYear();
+
+        let mon = customer.products[0].finance.month
+        let emi = customer.products[0].finance.emi
+        let ipm = customer.products[0].finance.ipm
+        for(let i=0; i<mon; i++){
+            if(finMonth === 11){
+                if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
+                    admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) - Number(emi)
+                }
+
+                if(admin.expectedProfits[Number(finYear) - 2023].month.length > finMonth){
+                    admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) - Number(ipm)
+                }
+
+                finDate.setMonth(0);
+                finDate.setFullYear(finYear+1);
+                finMonth = 0;
+                finYear += 1;
+
+            } else if(finMonth === 0) {
+                if(admin.expectedInstal.length > Number(finYear) - 2023){
+                    admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) - Number(emi)
+                }
+
+                if(admin.expectedProfits.length > Number(finYear) - 2023){
+                    admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) - Number(ipm)
+                } 
+
+                finDate.setMonth(1);
+                finMonth += 1;
+
+            } else {
+                if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
+                    admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) - Number(emi)
+                }
+
+                if(admin.expectedProfits[Number(finYear) - 2023].month.length > finMonth){
+                    admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) - Number(ipm)
+                } 
+
+                finDate.setMonth(finMonth+1);
+                finMonth += 1;
+            }
+        }
+
+        let finAmount = customer.products[0].finance.finAmount
+
+        investor.lifetime.moneyInvest = Number(investor.lifetime.moneyInvest) - Number(finAmount);
+
+        investor.current.moneyRem = Number(investor.current.moneyRem) + Number(finAmount);
+        investor.current.moneyInvest = Number(investor.current.moneyInvest) - Number(finAmount);
+        investor.current.currMoney = Number(investor.current.currMoney) - Number(finAmount);
+
+        admin.lifetime.moneyInvest = Number(admin.lifetime.moneyInvest) - Number(finAmount);
+
+        admin.current.activeInvest = Number(admin.current.activeInvest) - Number(finAmount);
+        admin.current.moneyRem = Number(admin.current.moneyRem) + Number(finAmount);
+
+        const index = investor.invested.indexOf(customer.products[0]._id);
+        investor.invested.splice(index, 1);
+
+        const ind = admin.customers.indexOf(customer._id);
+        admin.customers.splice(ind, 1)
+
+        await admin.save();
+        await investor.save();
+
+        await Customer.findByIdAndDelete(customer._id)
+
+        res.status(200).json({
+            success: true,
+            message: "Customer Deleted"
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
 export const getAllCustomers = async(req, res) => {
     try {
         const customers = await Customer.find();
@@ -871,8 +967,6 @@ export const updatePrevAdmin = async (req, res) => {
                 message: "Prev-data Updated Successfully",
             });
         }
-        // const revMonths = [{"Jan": 0}, {"Feb": 1}, {"Mar": 2}, {"Apr": 3}, {"May": 4}, {"Jun": 5}, {"Jul": 6}, {"Aug": 7}, {"Sep": 8}, {"Oct": 9}, {"Nov": 10}, {"Dec": 11} ]
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         let currMon = today.getMonth();
         let currYear = today.getFullYear();
@@ -884,62 +978,15 @@ export const updatePrevAdmin = async (req, res) => {
             prevMon = currMon - 1;
             prevYear = currYear
         }
-        const month = months[prevMon]
-
-        const instalments = await Instalment.find({month, year: prevYear})
-
-        let expecAmount=0, expecProfit=0, amount=0, profit=0;
-
-        instalments.forEach(elem => {
-            expecAmount = Number(expecAmount) + Number(elem.expecAmount)
-            expecProfit = Number(expecProfit) + Number(elem.expecProfit)
-            amount = Number(amount) + Number(elem.amount)
-            profit = Number(profit) + Number(elem.profit)
-        });
-
-        admin.lifetime.prevProfit = Number(profit);
-
-        admin.profits[prevYear - 2024].month[prevMon] = Number(profit);
-        // admin.expectedProfits[prevYear - 2024].month[prevMon] = Number(expecProfit);
-        admin.receivedInstal[prevYear - 2024].month[prevMon] = Number(amount);
-        // admin.expectedInstal[prevYear - 2024].month[prevMon] = Number(expecAmount);
-
 
         admin.lifetime.prevMoneyInvest = admin.lifetime.moneyInvest
         admin.lifetime.prevMoneyTotal = admin.lifetime.moneyTotal
-        // admin.lifetime.prevProfit = admin.lifetime.profit
+        admin.lifetime.prevProfit = admin.profits[prevYear - 2023].month[prevMon]
 
         admin.current.prevActiveInvest = admin.current.activeInvest
         admin.current.prevMoneyRem = admin.current.moneyRem
 
         await admin.save()
-
-        const customers = await Customer.find();
-
-        let exProfit=0, exAmount=0
-        customers.forEach(customer => {
-            const DATE = new Date(customer.nextEMIDate)
-            if(DATE.getMonth() === currMon && DATE.getFullYear() === currYear){
-                exProfit = Number(exProfit) + Number(customer.nextMonProfit) + Number(Number((Number(customer.penalty) - Number(customer.buffer))*customer.nextMonProfit)/Number(customer.netNextEMI))
-                exAmount = Number(exAmount) + Number(customer.netNextEMI) + Number(Number(customer.penalty) - Number(customer.buffer))
-            }  
-        });
-
-        if(currMon === 0){
-            admin.expectedProfits.push({
-                prevYear: currYear,
-                month: [exProfit]
-            })
-
-            admin.expectedInstal.push({
-                year: currYear,
-                month: [exProfit]
-            })
-        } else {
-            admin.expectedProfits[currYear - 2024].month.push(exProfit)
-
-            admin.expectedInstal[currYear - 2024].month.push(expecAmount)
-        }
 
         date.setDate(today.getDate());
         date.setMonth(today.getMonth());
@@ -1000,141 +1047,3 @@ export const updatePrevInvestors = async (req, res) => {
     }
 }
 
-
-export const upAdmin = async(req, res) => {
-    try {
-        const customers = await Customer.find();
-        const admin = await Admin.findOne();
-        // const { instals } = req.body;
-        // const date = new Date();
-        // const today = new Date(Date.now())
-        // date.setMonth(today.getMonth()-1)
-        // date.setDate(1);
-
-        for (const customer of customers) {
-            const insDate = new Date(customer.nextEMIDate);
-            let elDate;
-            for (const elem of customer.products) {
-                elDate = new Date(elem.details.instalDate);
-                if(insDate.getMonth() !== elDate.getMonth() || insDate.getFullYear() !== elDate.getFullYear() || insDate.getDate() !== elDate.getDate()){
-                    elDate = insDate;
-                    elem.details.instalDate = insDate;
-                }
-            }
-
-            await customer.save();
-
-            // let finDate = new Date(customer.nextEMIDate);
-            // let emi = Number(customer.netNextEMI);
-            // let interest = Number(customer.nextMonProfit)
-            // let mon = customer.products[0].finance.month
-            // let finMonth = finDate.getMonth();
-            // let finYear = finDate.getFullYear();
-
-            // for(let i=0; i<mon; i++){
-            //     if(finMonth === 11){
-            //         if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
-            //             admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + emi
-            //         } else {
-            //             admin.expectedInstal[Number(finYear) - 2023].month.push(emi);
-            //         }
-
-            //         if(admin.expectedProfits[Number(finYear) - 2023].month.length > finMonth){
-            //             admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + interest
-            //         } else {
-            //             admin.expectedProfits[Number(finYear) - 2023].month.push(interest);
-            //         }
-
-            //         finDate.setMonth(0);
-            //         finDate.setFullYear(finYear+1);
-            //         finMonth = 0;
-            //         finYear += 1;
-
-            //     } else if(finMonth === 0) {
-            //         if(admin.expectedInstal.length > Number(finYear) - 2023){
-            //             admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + emi
-            //         } else {
-            //             admin.expectedInstal.push({
-            //                 year: finYear,
-            //                 month: [emi]
-            //             })
-            //         }
-
-            //         if(admin.expectedProfits.length > Number(finYear) - 2023){
-            //             admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + interest
-            //         } else {
-            //             admin.expectedProfits.push({
-            //                 year: finYear,
-            //                 month: [interest]
-            //             })
-            //         }
-
-            //         finDate.setMonth(1);
-            //         finMonth += 1;
-
-            //     } else {
-            //         if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
-            //             admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + emi
-            //         } else {
-            //             admin.expectedInstal[Number(finYear) - 2023].month.push(emi);
-            //         }
-
-            //         if(admin.expectedProfits[Number(finYear) - 2023].month.length > finMonth){
-            //             admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + interest
-            //         } else {
-            //             admin.expectedProfits[Number(finYear) - 2023].month.push(interest);
-            //         }
-
-            //         finDate.setMonth(finMonth+1);
-            //         finMonth += 1;
-            //     }
-
-            //     await admin.save();
-            // }
-        }
-
-        // admin.profits = profits;
-        // await admin.save();
-
-        res.status(200).json({
-            success: true,
-            message: "Changed successfully"
-        });
-        
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        })
-    }
-}
-
-export const upAd = async(req, res) => {
-    try {
-        // const customers = await Customer.find();
-        const admin = await Admin.findOne();
-        for (const cust of admin.customers) {
-            const customer = await Customer.findById(cust);
-        }
-        // const date = new Date();
-        // const today = new Date(Date.now())
-        // date.setMonth(today.getMonth()-1)
-        // date.setDate(1);
-
-        // admin.expectedProfits = instals
-        // admin.expectedInstal = instals
-
-        // await admin.save();
-
-        res.status(200).json({
-            success: true,
-            message: "Found successfully"
-        });
-        
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        })
-    }
-}

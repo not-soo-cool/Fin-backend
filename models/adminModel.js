@@ -154,6 +154,20 @@ const adminSchema = new mongoose.Schema({
             ]
         }
     ],
+    penalty: [
+        {
+            year: {
+                type: Number,
+                default: 2024
+            },
+            month : [
+                {
+                    type: Number,
+                    default: 0
+                }
+            ]
+        }
+    ],
     expectedInstal: [
         {
             year: {

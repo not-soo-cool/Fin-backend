@@ -1047,3 +1047,278 @@ export const updatePrevInvestors = async (req, res) => {
     }
 }
 
+// Extras
+export const testUpdate = async (req, res) => {
+    try {
+
+        const admin = await Admin.findOne()
+        const investors = await Investor.find()
+
+        const penalty = [
+            {
+                year: 2024,
+                month: [0, 0, 0, 0]
+            }
+        ]
+
+        admin.penalty = penalty;
+        await admin.save();
+        for (const investor of investors) {
+            investor.penalty = penalty;
+            await investor.save()
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Penalty Updated Successfully",
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+export const testAdd = async (req, res) => {
+    try {
+
+        console.log("Working 1...")
+        let admin = await Admin.findById(req.admin._id);
+        console.log("Working 2...")
+
+        const {firstName, lastName, email, mob, street, city, state, country, postal, dob, gender, aadhar, emiDate, guarantorName, guarantorAdd, guarantorPh, prodName, prodPrice, downPay, finAmount, mon, roi, invEmail} = req.body;
+
+        const instals = [
+            {
+                year: 2023,
+                month: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+                year: 2024,
+                month: [0, 0, 0]
+            },
+        ]
+
+        let customer = await Customer.findOne({email});
+        let investor = await Investor.findOne({email: invEmail});
+        const interest = Number(Number(finAmount*roi*mon)/100).toFixed(0);
+        const ipm = Number(interest)/Number(mon)
+        const emi = Number((Number(finAmount) + Number(interest))/mon).toFixed(0);
+        const today = new Date();
+        // const instalDate = new Date(Date.now());
+        const instalDate = new Date(emiDate);
+        const createdAt = new Date(emiDate);
+        console.log("Working 3...")
+
+        if(instalDate.getDate() >= 24){
+            if(instalDate.getMonth() === 10){
+                instalDate.setMonth(0)
+                instalDate.setFullYear(instalDate.getFullYear()+1)
+            } else if(instalDate.getMonth() === 11){
+                instalDate.setMonth(1);
+                instalDate.setFullYear(instalDate.getFullYear()+1)
+            } else {
+                instalDate.setMonth(instalDate.getMonth() + 2);
+            }
+        } else {
+            if(instalDate.getMonth() === 11){
+                instalDate.setMonth(0);
+                instalDate.setFullYear(instalDate.getFullYear()+1)
+            } else {
+                instalDate.setMonth(instalDate.getMonth() + 1);
+            }
+        }
+        instalDate.setDate(process.env.INST_DATE);
+        let finDate = new Date(instalDate);
+        let finMonth = finDate.getMonth();
+        let finYear = finDate.getFullYear();
+
+        // for(let i=0; i<mon; i++){
+        //     if(finMonth === 11){
+        //         if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
+        //             admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + Number(emi)
+        //         } else {
+        //             admin.expectedInstal[Number(finYear) - 2023].month.push(emi);
+        //         }
+
+        //         if(admin.expectedProfits[Number(finYear) - 2023].month.length > finMonth){
+        //             admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + Number(ipm)
+        //         } else {
+        //             admin.expectedProfits[Number(finYear) - 2023].month.push(ipm);
+        //         }
+
+        //         finDate.setMonth(0);
+        //         finDate.setFullYear(finYear+1);
+        //         finMonth = 0;
+        //         finYear += 1;
+
+        //     } else if(finMonth === 0) {
+        //         if(admin.expectedInstal.length > Number(finYear) - 2023){
+        //             admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + Number(emi)
+        //         } else {
+        //             admin.expectedInstal.push({
+        //                 year: finYear,
+        //                 month: [emi]
+        //             })
+        //         }
+
+        //         if(admin.expectedProfits.length > Number(finYear) - 2023){
+        //             admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + Number(ipm)
+        //         } else {
+        //             admin.expectedProfits.push({
+        //                 year: finYear,
+        //                 month: [ipm]
+        //             })
+        //         }
+
+        //         finDate.setMonth(1);
+        //         finMonth += 1;
+
+        //     } else {
+        //         if(admin.expectedInstal[Number(finYear) - 2023].month.length > finMonth){
+        //             admin.expectedInstal[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedInstal[Number(finYear) - 2023].month[finMonth]) + Number(emi)
+        //         } else {
+        //             admin.expectedInstal[Number(finYear) - 2023].month.push(emi);
+        //         }
+
+        //         if(admin.expectedProfits[Number(finYear) - 2023].month.length > finMonth){
+        //             admin.expectedProfits[Number(finYear) - 2023].month[finMonth] = Number(admin.expectedProfits[Number(finYear) - 2023].month[finMonth]) + Number(ipm)
+        //         } else {
+        //             admin.expectedProfits[Number(finYear) - 2023].month.push(ipm);
+        //         }
+
+        //         finDate.setMonth(finMonth+1);
+        //         finMonth += 1;
+        //     }
+        // }
+
+        await admin.save();
+        console.log("Working 4...")
+
+        const name = firstName + " " + lastName
+
+        const address = {
+            street,
+            city,
+            state,
+            country,
+            postal
+        }
+
+        const prodOptions = {
+            name: prodName,
+            price: prodPrice
+        }
+
+        const guarantorOptions = {
+            name: guarantorName,
+            add: guarantorAdd,
+            ph: guarantorPh
+        }
+
+        const financeOptions = {
+            downPay: downPay,
+            finAmount,
+            month: mon,
+            rate: roi,
+            netAmount: Number(finAmount)+Number(interest),
+            netInterest: interest,
+            emi,
+            ipm,
+            proFees: Number(downPay) + Number(finAmount) - Number(prodPrice)
+        }
+
+        const detailOptions = {
+            netPaid: 0,
+            netRem: Number(finAmount)+Number(interest),
+            amountPaid: 0,
+            amountRem: finAmount,
+            interestPaid: 0,
+            interestRem: interest,
+            monComp: 0,
+            monRem: Number(mon),
+            instalDate,
+            nextEMI: emi,
+        }
+
+        const productOption = {
+            investor: investor._id,
+            prod: prodOptions,
+            finance: financeOptions,
+            details: detailOptions,
+        }
+
+        let flag = false;
+        console.log("Working 5...")
+
+        if(!customer){
+            customer = await Customer.create({
+                name,
+                email,
+                mob,
+                guarantor: guarantorOptions,
+                address,
+                dob,
+                gender,
+                aadhar,
+                instals,
+                nextEMIDate: instalDate,
+                createdAt,
+            });
+
+            // admin.customers.push(customer._id);
+            // await admin.save();
+
+            flag = true;
+        }
+        console.log("Working 6...")
+
+        customer.products.push(productOption);
+        await customer.save();
+        
+        const product = customer.products[customer.products.length - 1];
+        const nextDate = new Date(customer.nextEMIDate);
+        if(instalDate.getMonth() === nextDate.getMonth() && instalDate.getFullYear
+        () === nextDate.getFullYear()){
+            customer.amountDue = Number(customer.amountDue) + Number(product.details.netRem);
+            customer.netNextEMI = Number(customer.netNextEMI) + Number(product.finance.emi)
+            customer.nextMonProfit = Number(customer.nextMonProfit) + Number(product.finance.ipm)
+        }
+
+        await customer.save();
+        console.log("Working 7...")
+
+        // investor.invested.push({
+        //     customer: customer._id,
+        //     product: product._id
+        // })
+
+        // investor.lifetime.moneyInvest = Number(investor.lifetime.moneyInvest) + Number(finAmount);
+
+        // investor.current.moneyRem = Number(investor.current.moneyRem) - Number(finAmount);
+        // investor.current.moneyInvest = Number(investor.current.moneyInvest) + Number(finAmount);
+        // investor.current.currMoney = Number(investor.current.currMoney) + Number(finAmount);
+        // await investor.save();
+
+        // admin.lifetime.moneyInvest = Number(admin.lifetime.moneyInvest) + Number(finAmount);
+
+        // admin.current.activeInvest = Number(admin.current.activeInvest) + Number(finAmount);
+        // admin.current.moneyRem = Number(admin.current.moneyRem) - Number(finAmount);
+
+        // await admin.save()
+
+        res.status(flag ? 201 : 200).json({
+            success: true,
+            message: (flag ? "Customer Added" : "Product Details added")
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+

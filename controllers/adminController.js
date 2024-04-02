@@ -969,7 +969,7 @@ export const getAllNotifications = async(req, res) => {
 
         res.status(200).json({
             success: true,
-            investors: notifications.reverse()
+            notifications: notifications.reverse()
         });
         
     } catch (error) {

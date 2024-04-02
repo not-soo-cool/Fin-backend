@@ -2,6 +2,7 @@ import { Admin } from "../models/adminModel.js";
 import { Customer } from "../models/customerModel.js";
 import { Instalment } from "../models/instalmentModel.js";
 import { Investor } from "../models/investorModel.js";
+import { Notification } from "../models/notificationModel.js";
 
 export const addInstalment = async(req, res) => {
     try {
@@ -283,6 +284,15 @@ export const addInstalment = async(req, res) => {
             profit,
             expecProfit,
             createdAt,
+        });
+
+        const notification = await Notification.create({
+            notName: "Instalment Added",
+            name: customer.name,
+            createdAt: Date.now(),
+            amount: received,
+            year,
+            month
         });
 
         customer.instalment.unshift(instalment._id);
@@ -719,6 +729,15 @@ export const testInstal = async(req, res) => {
         customer.inProgress = true;
         
         await customer.save();
+
+        const notification = await Notification.create({
+            notName: "Instalment Added",
+            name: customer.name,
+            createdAt: Date.now(),
+            amount: received,
+            year,
+            month
+        });
 
         // let pen=0;
         for(const elem of customer.products){

@@ -21,6 +21,13 @@ export const addWithdrawl = async(req, res) => {
             amount
         });
 
+        const notification = await Notification.create({
+            notName: "Withdrawl Added",
+            name: investor.name,
+            createdAt: Date.now(),
+            amount
+        });
+
         investor.lifetime.withdrawn = Number(investor.lifetime.withdrawn) + Number(amount) 
         investor.current.moneyRem = Number(investor.current.moneyRem) - Number(amount);
         investor.current.moneyWorth = Number(investor.current.moneyWorth) - Number(amount);

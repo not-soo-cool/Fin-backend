@@ -4,6 +4,7 @@ import crypto from 'crypto'
 import { Customer } from "../models/customerModel.js";
 import { Investor } from "../models/investorModel.js";
 import { Instalment } from "../models/instalmentModel.js";
+import { Notification } from "../models/notificationModel.js";
 
 export const register = async (req, res) => {
     try {
@@ -543,6 +544,14 @@ export const addCustomer = async (req, res) => {
             flag = true;
         }
 
+        const notification = await Notification.create({
+            notName: "Customer Added",
+            name,
+            createdAt: Date.now(),
+            amount: finAmount,
+            custInfo: prodName
+        });
+
         customer.products.push(productOption);
         await customer.save();
         
@@ -856,6 +865,13 @@ export const addInvestor = async (req, res) => {
 
             flag = true;
         }
+
+        const notification = await Notification.create({
+            notName: "Investor Added",
+            name,
+            createdAt: Date.now(),
+            amount: invest
+        });
 
 
         res.status(flag ? 201 : 200).json({
@@ -1273,8 +1289,15 @@ export const testAdd = async (req, res) => {
 
             flag = true;
         }
-        console.log("Working 6...")
 
+        const notification = await Notification.create({
+            notName: "Customer Added",
+            name,
+            createdAt: Date.now(),
+            amount: finAmount,
+            custInfo: prodName
+        });
+        
         customer.products.push(productOption);
         await customer.save();
         
@@ -1288,7 +1311,6 @@ export const testAdd = async (req, res) => {
         }
 
         await customer.save();
-        console.log("Working 7...")
 
         // investor.invested.push({
         //     customer: customer._id,

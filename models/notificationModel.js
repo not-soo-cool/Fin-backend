@@ -20,7 +20,15 @@ const notificationSchema = new mongoose.Schema({
     custInfo: {
         type: String,
         default: " "
-    }
+    },
+    year: {
+        type: Number,
+        default: 2024
+    },
+    month: {
+        type: String,
+        default: "Apr"
+    },
 });
 
 // instalSchema.pre('save', async function(next) {

@@ -962,6 +962,42 @@ export const updateInvestor = async (req, res) => {
 }
 
 
+// Customer controller actions
+export const getNotifications = async(req, res) => {
+    try {
+        const notifications = await Notification.find();
+
+        res.status(200).json({
+            success: true,
+            investors: notifications.reverse()
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+export const getNotification = async(req, res) => {
+    try {
+        const notification = await Notification.findById(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            notification
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+
 // Updating Previous Values
 export const updatePrevAdmin = async (req, res) => {
     try {

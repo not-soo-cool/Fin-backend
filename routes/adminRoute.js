@@ -1,5 +1,5 @@
 import express from 'express'
-import { addCustomer, addInvestor, afterDueCustomers, contact, deleteCustomer, forgotPassword, getAllCustomers, getAllInvestors, getCustomer, getInvestor, login, logout, myProfile, register, resetPassword, testAdd, testUpdate, updateCustomer, updateInvestor, updatePassword, updatePrevAdmin, updatePrevInvestors, updateProfile } from '../controllers/adminController.js';
+import { addCustomer, addInvestor, afterDueCustomers, contact, deleteCustomer, forgotPassword, getAllCustomers, getAllInvestors, getAllNotifications, getCustomer, getInvestor, getNotification, login, logout, myProfile, register, resetPassword, testAdd, testUpdate, updateCustomer, updateInvestor, updatePassword, updatePrevAdmin, updatePrevInvestors, updateProfile } from '../controllers/adminController.js';
 import { isAdminOrInvestorAuthenticated, isAnyAuthenticated, isAuthenticated } from '../middlewares/adminAuth.js';
 import { addInstalment, getAllInstalments, getInstalment, getUserInstalments, testInstal } from '../controllers/instalmentController.js';
 import { addWithdrawl, getAllWithdrawls, getUserWithdrawls, getWithdrawl } from '../controllers/withdrawlController.js';
@@ -71,6 +71,12 @@ adminRouter.route("/get/withdrawls").get(isAuthenticated, getAllWithdrawls);
 adminRouter.route("/user/withdrawls/:id").get(isAuthenticated, getUserWithdrawls);
 
 adminRouter.route("/get/withdrawl/:id").get(isAuthenticated, getWithdrawl);
+
+
+// Notification routing
+adminRouter.route("/get/notifications").get(isAuthenticated, getAllNotifications);
+
+adminRouter.route("/get/notification/:id").get(isAuthenticated, getNotification);
 
 
 // Extra

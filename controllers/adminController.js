@@ -963,7 +963,7 @@ export const updateInvestor = async (req, res) => {
 
 
 // Customer controller actions
-export const getNotifications = async(req, res) => {
+export const getAllNotifications = async(req, res) => {
     try {
         const notifications = await Notification.find();
 

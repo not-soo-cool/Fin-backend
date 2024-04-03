@@ -731,7 +731,8 @@ export const getCustomer = async(req, res) => {
 export const afterDueCustomers = async (req, res) => {
     try {
         const currDate = new Date();
-        const users = await Customer.find({ nextEMIDate: { $lt: currDate } });
+        const customers = await Customer.find({ nextEMIDate: { $lt: currDate } });
+        const users = customers.filter(customer => customer.amountDue !== 0)
 
         res.status(200).json({
             success: true,

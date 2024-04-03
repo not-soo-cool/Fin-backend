@@ -122,7 +122,7 @@ const investorSchema = new mongoose.Schema({
         {
             year: {
                 type: Number,
-                default: 2021
+                default: 2023
             },
             month : [
                 {
@@ -150,7 +150,7 @@ const investorSchema = new mongoose.Schema({
         {
             year: {
                 type: Number,
-                default: 2021
+                default: 2023
             },
             month : [
                 {

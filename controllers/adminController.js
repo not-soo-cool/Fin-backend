@@ -344,15 +344,19 @@ export const addCustomer = async (req, res) => {
 
         const {firstName, lastName, email, mob, street, city, state, country, postal, dob, gender, aadhar, emiDate, guarantorName, guarantorAdd, guarantorPh, prodName, prodPrice, downPay, finAmount, mon, roi, invEmail} = req.body;
 
+        const today = new Date(Date.now());
+        const month = today.getMonth();
+        const year = today.getFullYear();
+        const arr = [];
+        for(let i=0; i<=month; i++){
+            arr.push(0);
+        }
+
         const instals = [
             {
-                year: 2023,
-                month: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            },
-            {
-                year: 2024,
-                month: [0, 0, 0]
-            },
+                year,
+                month: arr
+            }
         ]
 
         let customer = await Customer.findOne({email});
@@ -360,7 +364,6 @@ export const addCustomer = async (req, res) => {
         const interest = Number(Number(finAmount*roi*mon)/100).toFixed(0);
         const ipm = Number(interest)/Number(mon)
         const emi = Number((Number(finAmount) + Number(interest))/mon).toFixed(0);
-        const today = new Date();
         // const instalDate = new Date(Date.now());
         const instalDate = new Date(emiDate);
         const createdAt = new Date(emiDate);
@@ -712,9 +715,17 @@ export const getCustomer = async(req, res) => {
 
 export const afterDueCustomers = async (req, res) => {
     try {
+        const admin = await Admin.findById(req.admin._id);
         const currDate = new Date();
         const customers = await Customer.find({ nextEMIDate: { $lt: currDate } });
         const users = customers.filter(customer => customer.amountDue !== 0)
+        const arr = [];
+        users.forEach(customer => {
+            arr.push(customer._id);
+        });
+
+        admin.afterDueCustomers = arr;
+        await admin.save();
 
         res.status(200).json({
             success: true,
@@ -778,6 +789,27 @@ export const addInvestor = async (req, res) => {
 
         const {firstName, lastName, email, mob, street, city, state, country, postal, dob, gender, aadhar, invest} = req.body;
 
+        const today = new Date(Date.now());
+        const month = today.getMonth();
+        const year = today.getFullYear();
+        const arr = [];
+        for(let i=0; i<=month; i++){
+            arr.push(0);
+        }
+
+        const profits = [{
+            year,
+            month: arr
+        }]
+        const amounts = [{
+            year,
+            month: arr
+        }]
+        const penalty = [{
+            year,
+            month: arr
+        }]
+
         let investor = await Investor.findOne({email});
 
         admin.lifetime.moneyTotal = Number(admin.lifetime.moneyTotal) + Number(invest);
@@ -819,15 +851,6 @@ export const addInvestor = async (req, res) => {
 
         let flag = false;
 
-        const profits = [{
-            year: 2024,
-            month: [100, 200, 300]
-        }]
-        const amounts = [{
-            year: 2024,
-            month: [100, 200, 300]
-        }]
-
         if(!investor){
             investor = await Investor.create({
                 name,
@@ -840,7 +863,8 @@ export const addInvestor = async (req, res) => {
                 lifetime: lifetimeOptions,
                 current: currentOptions,
                 profits,
-                amounts
+                amounts,
+                penalty
             });
 
             admin.investors.unshift(investor._id);

@@ -16,14 +16,12 @@ export const addInstalment = async(req, res) => {
         const profit = notSame ? Number(customer.nextMonProfit*amount)/Number(customer.netNextEMI) : customer.nextMonProfit
         const penalty = customer.penalty;
         customer.penalty = 0;
-        let takePenalty = false;
 
         const today = new Date(Date.now());
         const date = new Date(customer.nextEMIDate);
         const createdAt = new Date(customer.nextEMIDate);
         if(today.getMonth() === date.getMonth() && today.getFullYear() === date.getFullYear() && today.getDate() > date.getDate()){
             if(checked){
-                takePenalty = true;
                 customer.penalty = 500
                 await customer.save();
             }
@@ -98,9 +96,11 @@ export const addInstalment = async(req, res) => {
 
         await admin.save();
 
+        const custYear = customer.instals[0].year;
+        // const custYear = today.getFullYear();
         if(adMon === 0){
-            if(customer.instals.length > Number(adYear) - 2023){
-                customer.instals[Number(adYear) - 2023].month[adMon] = Number(customer.instals[Number(adYear) - 2023].month[adMon]) + Number(amount) + Number(penalty);
+            if(customer.instals.length > Number(adYear) - Number(custYear)){
+                customer.instals[Number(adYear) - Number(custYear)].month[adMon] = Number(customer.instals[Number(adYear) - Number(custYear)].month[adMon]) + Number(amount) + Number(penalty);
             } else {
                 customer.instals.push({
                     year: adYear,
@@ -108,10 +108,10 @@ export const addInstalment = async(req, res) => {
                 })
             }
         } else {
-            if(customer.instals[Number(adYear) - 2023].month.length > adMon){
-                customer.instals[Number(adYear) - 2023].month[adMon] = Number(customer.instals[Number(adYear) - 2023].month[adMon]) + Number(amount) + Number(penalty);
+            if(customer.instals[Number(adYear) - Number(custYear)].month.length > adMon){
+                customer.instals[Number(adYear) - Number(custYear)].month[adMon] = Number(customer.instals[Number(adYear) - Number(custYear)].month[adMon]) + Number(amount) + Number(penalty);
             } else {
-                customer.instals[Number(adYear) - 2023].month.push(Number(amount) + Number(penalty))
+                customer.instals[Number(adYear) - Number(custYear)].month.push(Number(amount) + Number(penalty))
             }
         }
 
@@ -180,9 +180,10 @@ export const addInstalment = async(req, res) => {
 
                     investor.current.moneyWorth = Number(investor.current.moneyWorth) + Number(intMoney) + Number(penalty)
 
+                    const invYear = investor.profits[0].year;
                     if(adMon === 0){
-                        if(investor.profits.length > Number(adYear) - 2023){
-                            investor.profits[Number(adYear) - 2023].month[adMon] = Number(investor.profits[Number(adYear) - 2023].month[adMon]) + Number(intMoney);
+                        if(investor.profits.length > Number(adYear) - Number(invYear)){
+                            investor.profits[Number(adYear) - Number(invYear)].month[adMon] = Number(investor.profits[Number(adYear) - Number(invYear)].month[adMon]) + Number(intMoney);
                         } else {
                             investor.profits.push({
                                 year: adYear,
@@ -190,8 +191,8 @@ export const addInstalment = async(req, res) => {
                             })
                         }
 
-                        if(investor.amounts.length > Number(adYear) - 2023){
-                            investor.amounts[Number(adYear) - 2023].month[adMon] = Number(investor.amounts[Number(adYear) - 2023].month[adMon]) + Number(money) + Number(penalty);
+                        if(investor.amounts.length > Number(adYear) - Number(invYear)){
+                            investor.amounts[Number(adYear) - Number(invYear)].month[adMon] = Number(investor.amounts[Number(adYear) - Number(invYear)].month[adMon]) + Number(money) + Number(penalty);
                         } else {
                             investor.amounts.push({
                                 year: adYear,
@@ -210,16 +211,16 @@ export const addInstalment = async(req, res) => {
                             }
                         }
                     } else {
-                        if(investor.profits[Number(adYear) - 2023].month.length > adMon){
-                            investor.profits[Number(adYear) - 2023].month[adMon] = Number(investor.profits[Number(adYear) - 2023].month[adMon]) + Number(intMoney);
+                        if(investor.profits[Number(adYear) - Number(invYear)].month.length > adMon){
+                            investor.profits[Number(adYear) - Number(invYear)].month[adMon] = Number(investor.profits[Number(adYear) - Number(invYear)].month[adMon]) + Number(intMoney);
                         } else {
-                            investor.profits[Number(adYear) - 2023].month.push(intMoney)
+                            investor.profits[Number(adYear) - Number(invYear)].month.push(intMoney)
                         }
 
-                        if(investor.amounts[Number(adYear) - 2023].month.length > adMon){
-                            investor.amounts[Number(adYear) - 2023].month[adMon] = Number(investor.amounts[Number(adYear) - 2023].month[adMon]) + Number(money) + Number(penalty);
+                        if(investor.amounts[Number(adYear) - Number(invYear)].month.length > adMon){
+                            investor.amounts[Number(adYear) - Number(invYear)].month[adMon] = Number(investor.amounts[Number(adYear) - Number(invYear)].month[adMon]) + Number(money) + Number(penalty);
                         } else {
-                            investor.amounts[Number(adYear) - 2023].month.push(Number(money) + Number(penalty))
+                            investor.amounts[Number(adYear) - Number(invYear)].month.push(Number(money) + Number(penalty))
                         }
 
                         if(penalty !== 0){
@@ -235,7 +236,18 @@ export const addInstalment = async(req, res) => {
                     }
                     await investor.save();
 
-                    investor.current.currMonProfit = investor.profits[Number(date.getFullYear()) - 2023].month[date.getMonth()];
+                    investor.current.currMonProfit = investor.profits[Number(today.getFullYear()) - Number(invYear)].month[today.getMonth()];
+
+                    let prevMon=0, prevYear=0;
+                    if(today.getMonth()===0){
+                        prevMon = 11;
+                        prevYear = today.getFullYear()-1;
+                    } else {
+                        prevMon = today.getMonth()-1;
+                        prevYear = today.getFullYear();
+                    }
+
+                    investor.current.prevMonProfit = investor.profits[Number(prevYear) - Number(invYear)].month[prevMon];
 
                     if(adMon === 11){
                         DATE.setMonth(0);
@@ -245,7 +257,7 @@ export const addInstalment = async(req, res) => {
                     }
                     DATE.setDate(process.env.INST_DATE);
                     DATE.setHours(23);
-                    DATE.setMinutes(59);
+                    DATE.setMinutes(55);
                     DATE.setSeconds(59);
 
                     elem.details.instalDate = DATE.toISOString();

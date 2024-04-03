@@ -365,25 +365,6 @@ export const addCustomer = async (req, res) => {
         const instalDate = new Date(emiDate);
         const createdAt = new Date(emiDate);
 
-        // if(instalDate.getDate() >= 23){
-        //     if(today.getMonth() === 10){
-        //         instalDate.setMonth(0)
-        //         instalDate.setFullYear(today.getFullYear()+1)
-        //     } else if(today.getMonth() === 11){
-        //         instalDate.setMonth(1);
-        //         instalDate.setFullYear(today.getFullYear()+1)
-        //     } else {
-        //         instalDate.setMonth(today.getMonth() + 2);
-        //     }
-        // } else {
-        //     if(today.getMonth() === 11){
-        //         instalDate.setMonth(0);
-        //         instalDate.setFullYear(today.getFullYear()+1)
-        //     } else {
-        //         instalDate.setMonth(today.getMonth() + 1);
-        //     }
-        // }
-
         if(instalDate.getDate() >= 24){
             if(instalDate.getMonth() === 10){
                 instalDate.setMonth(0)
@@ -519,6 +500,7 @@ export const addCustomer = async (req, res) => {
             prod: prodOptions,
             finance: financeOptions,
             details: detailOptions,
+            purchaseDate: createdAt,
         }
 
         let flag = false;

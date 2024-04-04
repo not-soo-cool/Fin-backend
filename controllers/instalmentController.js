@@ -249,6 +249,8 @@ export const addInstalment = async(req, res) => {
 
                     investor.current.prevMonProfit = investor.profits[Number(prevYear) - Number(invYear)].month[prevMon];
 
+                    await investor.save();
+
                     if(adMon === 11){
                         DATE.setMonth(0);
                         DATE.setFullYear(adYear+1);

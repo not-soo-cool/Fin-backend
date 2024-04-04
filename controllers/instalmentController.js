@@ -258,8 +258,8 @@ export const addInstalment = async(req, res) => {
                         DATE.setMonth(adMon+1)
                     }
                     DATE.setDate(process.env.INST_DATE);
-                    DATE.setHours(23);
-                    DATE.setMinutes(55);
+                    DATE.setHours(18);
+                    DATE.setMinutes(29);
                     DATE.setSeconds(59);
 
                     elem.details.instalDate = DATE.toISOString();
@@ -275,8 +275,8 @@ export const addInstalment = async(req, res) => {
         }
         // date.setMonth(date.getMonth()+1);
         date.setDate(process.env.INST_DATE);
-        date.setHours(23);
-        date.setMinutes(59);
+        date.setHours(18);
+        date.setMinutes(29);
         date.setSeconds(59);
 
         customer.nextEMIDate = date.toISOString();
@@ -697,8 +697,8 @@ export const testInstal = async(req, res) => {
                         DATE.setMonth(adMon+1)
                     }
                     DATE.setDate(process.env.INST_DATE);
-                    DATE.setHours(23);
-                    DATE.setMinutes(59);
+                    DATE.setHours(18);
+                    DATE.setMinutes(29);
                     DATE.setSeconds(59);
 
                     elem.details.instalDate = DATE.toISOString();
@@ -714,8 +714,8 @@ export const testInstal = async(req, res) => {
         }
         // date.setMonth(date.getMonth()+1);
         date.setDate(process.env.INST_DATE);
-        date.setHours(23);
-        date.setMinutes(59);
+        date.setHours(18);
+        date.setMinutes(29);
         date.setSeconds(59);
 
         customer.nextEMIDate = date.toISOString();

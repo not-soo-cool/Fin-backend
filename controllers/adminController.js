@@ -1387,3 +1387,65 @@ export const testAdd = async (req, res) => {
     }
 }
 
+export const currMonInstal = async (req, res) => {
+    try {
+
+        const { month, year } = req.body;
+
+        const instalments = await Instalment.find({ month, year })
+
+        let value = {
+            amount: 0,
+            profit: 0
+        }
+
+        for (const instalment of instalments) {
+            value.amount = Number(value.amount) + Number(instalment.amount);
+            value.profit = Number(value.profit) + Number(instalment.profit);
+        }
+
+        res.status(200).json({
+            success: true,
+            value,
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+export const currMonInvInstal = async (req, res) => {
+    try {
+
+        const { month, year } = req.body;
+
+        const kuchhs = await Instalment.find({ month, year }).populate("customer")
+
+        let value = {
+            amount: 0,
+            profit: 0
+        }
+
+        const instalments = kuchhs.filter((instal) => instal.customer.products[0].investor.toString() === req.params.id)
+
+        for (const instalment of instalments) {
+            value.amount = Number(value.amount) + Number(instalment.amount);
+            value.profit = Number(value.profit) + Number(instalment.profit);
+        }
+
+        res.status(200).json({
+            success: true,
+            value,
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+

@@ -1,5 +1,5 @@
 import express from 'express'
-import { addCustomer, addInvestor, afterDueCustomers, contact, deleteCustomer, forgotPassword, getAllCustomers, getAllInvestors, getAllNotifications, getCustomer, getInvestor, getNotification, login, logout, myProfile, register, resetPassword, testAdd, testUpdate, updateCustomer, updateInvestor, updatePassword, updatePrevAdmin, updatePrevInvestors, updateProfile } from '../controllers/adminController.js';
+import { addCustomer, addInvestor, afterDueCustomers, contact, currMonInstal, currMonInvInstal, deleteCustomer, forgotPassword, getAllCustomers, getAllInvestors, getAllNotifications, getCustomer, getInvestor, getNotification, login, logout, myProfile, register, resetPassword, testAdd, testUpdate, updateCustomer, updateInvestor, updatePassword, updatePrevAdmin, updatePrevInvestors, updateProfile } from '../controllers/adminController.js';
 import { isAdminOrInvestorAuthenticated, isAnyAuthenticated, isAuthenticated } from '../middlewares/adminAuth.js';
 import { addInstalment, getAllInstalments, getInstalment, getUserInstalments, testInstal } from '../controllers/instalmentController.js';
 import { addWithdrawl, getAllWithdrawls, getUserWithdrawls, getWithdrawl } from '../controllers/withdrawlController.js';
@@ -85,3 +85,7 @@ adminRouter.route("/up/penalty").get(testUpdate);
 adminRouter.route("/test/add/customer").post(isAuthenticated, testAdd);
 
 adminRouter.route("/test/add/instal").post(isAuthenticated, testInstal);
+
+adminRouter.route("/test/get/month/instal").post(isAuthenticated, currMonInstal);
+
+adminRouter.route("/test/get/inv/instal/:id").post(isAuthenticated, currMonInvInstal);

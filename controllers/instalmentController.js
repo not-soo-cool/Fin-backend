@@ -29,6 +29,9 @@ export const addInstalment = async(req, res) => {
         const adMon = date.getMonth();
         const adYear = date.getFullYear();
 
+        const todMon = today.getMonth();
+        const todYear = today.getFullYear();
+
         admin.lifetime.profit = Number(admin.lifetime.profit) + Number(profit) + Number(penalty);
 
         admin.current.netWorth = Number(admin.current.netWorth) + Number(profit) + Number(penalty);
@@ -92,7 +95,7 @@ export const addInstalment = async(req, res) => {
         await admin.save();
 
         admin.current.currMonInstal = admin.receivedInstal[Number(adYear) - 2023].month[adMon];
-        admin.current.activeProfit = admin.profits[Number(adYear) - 2023].month[adMon];
+        admin.current.activeProfit = admin.profits[Number(todYear) - 2023].month[todMon];
 
         await admin.save();
 

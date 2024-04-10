@@ -1,5 +1,6 @@
 import { Admin } from "../models/adminModel.js";
 import { Investor } from "../models/investorModel.js";
+import { Notification } from "../models/notificationModel.js";
 import { Withdrawl } from "../models/withdrawlModel.js";
 
 export const addWithdrawl = async(req, res) => {

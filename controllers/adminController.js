@@ -5,6 +5,7 @@ import { Customer } from "../models/customerModel.js";
 import { Investor } from "../models/investorModel.js";
 import { Instalment } from "../models/instalmentModel.js";
 import { Notification } from "../models/notificationModel.js";
+import { Withdrawl } from "../models/withdrawlModel.js";
 
 export const register = async (req, res) => {
     try {
@@ -1439,6 +1440,31 @@ export const currMonInvInstal = async (req, res) => {
         res.status(200).json({
             success: true,
             value,
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+export const addWith = async (req, res) => {
+    try {
+
+        const withdrawl = await Withdrawl.findById(req.params.id).populate("investor");
+
+        const notification = await Notification.create({
+            notName: "Withdrawl Added",
+            name: withdrawl.investor.name,
+            createdAt: withdrawl.createdAt,
+            amount: withdrawl.amount
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Notification Added",
         });
         
     } catch (error) {

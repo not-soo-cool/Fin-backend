@@ -1,9 +1,8 @@
 import express from 'express'
-import { addCustomer, addInvestor, addWith, afterDueCustomers, contact, currMonInstal, currMonInvInstal, deleteCustomer, forgotPassword, getAllCustomers, getAllInvestors, getAllNotifications, getCustomer, getInvestor, getNotification, login, logout, myProfile, register, resetPassword, testAdd, testUpdate, updateCustomer, updateInvestor, updatePassword, updatePrevAdmin, updatePrevInvestors, updateProfile } from '../controllers/adminController.js';
+import { addCustomer, addInvestor, afterDueCustomers, contact, deleteCustomer, forgotPassword, getAllCustomers, getAllInvestors, getAllNotifications, getCustomer, getInvestor, getNotification, login, logout, myProfile, register, resetPassword, updateCustomer, updateInvestor, updatePassword, updatePrevAdmin, updatePrevInvestors, updateProfile } from '../controllers/adminController.js';
 import { isAdminOrInvestorAuthenticated, isAnyAuthenticated, isAuthenticated } from '../middlewares/adminAuth.js';
-import { addInstalment, getAllInstalments, getInstalment, getUserInstalments, testInstal } from '../controllers/instalmentController.js';
+import { addInstalment, getAllInstalments, getInstalment, getUserInstalments } from '../controllers/instalmentController.js';
 import { addWithdrawl, getAllWithdrawls, getUserWithdrawls, getWithdrawl } from '../controllers/withdrawlController.js';
-import { isInvestorAuthenticated } from '../middlewares/investorAuth.js';
 
 export const adminRouter = express.Router();
 
@@ -80,14 +79,14 @@ adminRouter.route("/get/notification/:id").get(isAuthenticated, getNotification)
 
 
 // Extra
-adminRouter.route("/up/penalty").get(testUpdate);
+// adminRouter.route("/up/penalty").get(testUpdate);
 
-adminRouter.route("/test/add/customer").post(isAuthenticated, testAdd);
+// adminRouter.route("/test/add/customer").post(isAuthenticated, testAdd);
 
-adminRouter.route("/test/add/instal").post(isAuthenticated, testInstal);
+// adminRouter.route("/test/add/instal").post(isAuthenticated, testInstal);
 
-adminRouter.route("/test/get/month/instal").post(isAuthenticated, currMonInstal);
+// adminRouter.route("/test/get/month/instal").post(isAuthenticated, currMonInstal);
 
-adminRouter.route("/test/get/inv/instal/:id").post(isAuthenticated, currMonInvInstal);
+// adminRouter.route("/test/get/inv/instal/:id").post(isAuthenticated, currMonInvInstal);
 
-adminRouter.route("/test/add/with/:id").post(isAuthenticated, addWith);
+// adminRouter.route("/test/instal").get(isAuthenticated, addWith);

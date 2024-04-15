@@ -19,7 +19,7 @@ export const addInstalment = async(req, res) => {
 
         const today = new Date(Date.now());
         const date = new Date(customer.nextEMIDate);
-        const createdAt = new Date(customer.nextEMIDate);
+        const createdAt = new Date(Date.now());
         if(today.getMonth() === date.getMonth() && today.getFullYear() === date.getFullYear() && today.getDate() > date.getDate()){
             if(checked){
                 customer.penalty = 500
@@ -306,7 +306,7 @@ export const addInstalment = async(req, res) => {
         const notification = await Notification.create({
             notName: "Instalment Added",
             name: customer.name,
-            createdAt: Date.now(),
+            createdAt,
             amount: received,
             year,
             month

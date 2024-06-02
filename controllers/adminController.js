@@ -846,8 +846,10 @@ export const addInvestor = async (req, res) => {
 
         if(investor){
             investor.current.moneyWorth = Number(investor.current.moneyWorth) + Number(invest);
-            investor.lifetime.moneyWorth = Number(investor.lifetime.moneyWorth) + Number(invest);
-            investor.lifetime.moneyRem = Number(investor.lifetime.moneyRem) + Number(invest);
+            investor.lifetime.moneyTotal = Number(investor.lifetime.moneyTotal) + Number(invest);
+            investor.current.moneyRem = Number(investor.current.moneyRem) + Number(invest);
+            
+            await investor.save()
         }
 
         let flag = false;

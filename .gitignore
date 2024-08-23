@@ -1,2 +1,5 @@
+
 /node_modules
 /config/config.env
+.DS_Store
+/config/.DS_Store
